@@ -1,155 +1,162 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../api';
-import { AuthContext } from '../context/AuthContext';
+// src/pages/Login.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './Auth.css';
 
-export default function Login() {
-  const [creds, setCreds] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+const Login = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
-    setCreds({ ...creds, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    
-    console.log("Attempting login with:", {
-      email: creds.email,
-      password: creds.password ? `[${creds.password.length} chars]` : 'empty'
-    });
+    setIsLoading(true);
+    setMessage('');
 
     try {
-      // Send trimmed credentials
-      const loginData = {
-        email: creds.email.trim().toLowerCase(),
-        password: creds.password
-      };
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const { data } = await api.post('/auth/login', loginData);
-      console.log("Login response:", data);
+      if (formData.email && formData.password) {
+        // Determine role: placeholder logic, replace with real backend role
+        const role = formData.email.toLowerCase().includes('employer') ? 'employer' : 'gigworker';
 
-      // Handle different response formats
-      let userData;
-      
-      if (data.user) {
-        // New controller format: { success, token, user }
-        userData = data;
-      } else if (data.token) {
-        // Old router format: { token } - need to get user separately
-        console.log("Old format detected, fetching user data...");
-        
-        // Store token temporarily to make authenticated request
-        localStorage.setItem('token', data.token);
-        
-        try {
-          const userResponse = await api.get('/auth/me');
-          userData = {
-            token: data.token,
-            user: userResponse.data
-          };
-        } catch (userErr) {
-          console.error("Failed to fetch user data:", userErr);
-          // Fallback: create minimal user object
-          userData = {
-            token: data.token,
-            user: {
-              email: loginData.email,
-              role: 'GigWorker' // Default role, will need to be updated
-            }
-          };
-        }
+        // Persist auth info
+        localStorage.setItem('authToken', 'demo-token-' + Date.now());
+        localStorage.setItem(
+          'userData',
+          JSON.stringify({
+            email: formData.email,
+            name: formData.email.split('@')[0],
+            loginTime: new Date().toISOString(),
+            role,
+          })
+        );
+
+        setMessage('Login successful! Redirecting...');
+        // Redirect based on role
+        setTimeout(() => {
+          if (role === 'employer') {
+            navigate('/dashboard/employer');
+          } else {
+            navigate('/dashboard/gigworker');
+          }
+        }, 500);
       } else {
-        throw new Error("Invalid response format");
+        setMessage('Please fill in all fields');
       }
-
-      login(userData); // Store user in context
-
-      // Navigate to correct dashboard based on role
-      if (userData.user?.role === 'GigWorker') {
-        navigate('/dashboard/gigworker');
-      } else if (userData.user?.role === 'Employer') {
-        navigate('/dashboard/employer');
-      } else {
-        // Fallback for unknown roles
-        console.warn("Unknown role:", userData.user?.role);
-        navigate('/profile'); // or wherever you want to redirect
-      }
-    } catch (err) {
-      console.error("Full error object:", err);
-      console.error("Error response:", err.response);
-      
-      // Handle different error response formats
-      let errorMessage = 'Login failed';
-      
-      if (err.response?.data?.msg) {
-        errorMessage = err.response.data.msg;
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.response?.status === 400) {
-        errorMessage = 'Invalid credentials';
-      } else if (err.response?.status === 500) {
-        errorMessage = 'Server error. Please try again later.';
-      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
-        errorMessage = 'Cannot connect to server. Please check if the server is running.';
-      }
-      
-      setError(errorMessage);
+    } catch (error) {
+      console.error('Login error:', error);
+      setMessage('Login failed. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded shadow-md">
-        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p className="text-sm">{error}</p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Header */}
+          <div className="auth-header">
+            <div className="auth-logo">
+              <span className="gig">Gig</span><span className="pay">Pay</span>
+            </div>
+            <h1>Welcome back</h1>
+            <p>Sign in to your account to continue</p>
           </div>
-        )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={creds.email}
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-          disabled={loading}
-        />
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="auth-form">
+            {message && (
+              <div className="auth-message" aria-live="polite">
+                {message}
+              </div>
+            )}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={creds.password}
-          onChange={handleChange}
-          className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-          disabled={loading}
-        />
+            <div className="form-group">
+              <label htmlFor="email">Email address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+                disabled={isLoading}
+              />
+            </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 rounded text-white ${
-            loading 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-        >
-          {loading ? 'Logging in...' : 'Log In'}
-        </button>
-      </form>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="form-options">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  checked={formData.rememberMe}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+                <span className="checkbox-custom"></span>
+                Remember me
+              </label>
+
+              <Link to="/forgot-password" className="forgot-link">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button type="submit" className="auth-btn primary" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="auth-footer">
+            <p>
+              Don't have an account?{' '}
+              <Link to="/register" className="auth-link">Sign up</Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Side Panel */}
+        <div className="auth-side-panel">
+          <div className="side-content">
+            <h2>Join the future of work</h2>
+            <p>Connect with opportunities that match your skills and grow your career in the gig economy.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;

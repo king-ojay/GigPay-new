@@ -21,7 +21,7 @@ export default function EmployerDashboard() {
       <h1 className="text-2xl font-bold mb-4">My Posted Gigs</h1>
 
       <Link
-        to="/create"
+        to="/post-gig"
         className="inline-block mb-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Post New Gig
