@@ -1,5 +1,12 @@
 require('dotenv').config(); // Must be first
 
+console.log('=== ENV DEBUG ===');
+console.log('Current directory:', __dirname);
+console.log('MONGODB_URI loaded:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URI value:', process.env.MONGODB_URI);
+console.log('MONGODB_URI type:', typeof process.env.MONGODB_URI);
+console.log('==================');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
