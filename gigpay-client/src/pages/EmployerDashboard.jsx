@@ -1,59 +1,41 @@
-// src/pages/EmployerDashboard.jsx
-import React, { useEffect, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../api';
-import { AuthContext } from '../context/AuthContext';
+// pages/EmployerDashboard.jsx
+import React from 'react';
+import "./Dashboard.css";
+
+const postedJobs = [
+  {
+    id: 1,
+    title: 'Web Developer',
+    applicants: 8,
+  },
+  {
+    id: 2,
+    title: 'Social Media Manager',
+    applicants: 3,
+  },
+];
 
 export default function EmployerDashboard() {
-  const { user } = useContext(AuthContext);
-  const [myJobs, setMyJobs] = useState([]);
-
-  useEffect(() => {
-    if (!user) return;
-    // Fetch jobs posted by this employer
-    api.get(`/jobs/posted/${user.id}`)
-      .then(res => setMyJobs(res.data))
-      .catch(err => console.error('Error loading posted jobs:', err));
-  }, [user]);
-
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">My Posted Gigs</h1>
+    <div className="dashboard-container">
+      <h1>Employer Dashboard</h1>
+      <p>Manage your posted gigs in Rwanda</p>
 
-      <Link
-        to="/post-gig"
-        className="inline-block mb-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Post New Gig
-      </Link>
-
-      {myJobs.length === 0 ? (
-        <p>You haven’t posted any gigs yet.</p>
-      ) : (
-        myJobs.map(job => (
-          <div key={job._id} className="mb-4 p-4 border rounded bg-white shadow-sm">
-            <h2 className="text-lg font-semibold">{job.title}</h2>
-            <p className="text-sm text-gray-600 mt-1">{job.description}</p>
-            {'budget' in job && (
-              <p className="mt-2"><strong>Budget:</strong> {job.budget}</p>
-            )}
-            <div className="mt-3 space-x-4">
-              <Link
-                to={`/jobs/${job._id}/status`}
-                className="text-blue-600 hover:underline"
-              >
-                View / Update Status
-              </Link>
-              <Link
-                to={`/jobs/${job._id}/applicants`}
-                className="text-blue-600 hover:underline"
-              >
-                View Applicants
-              </Link>
-            </div>
+      <div className="jobs-list">
+        {postedJobs.map((job) => (
+          <div key={job.id} className="job-card">
+            <h3>{job.title}</h3>
+            <p>Applicants: {job.applicants}</p>
+            <button className="view-button">View Applications</button>
           </div>
-        ))
-      )}
+        ))}
+      </div>
+
+      <div className="post-job">
+        <a href="/post-job">
+          <button className="apply-button">Post New Gig</button>
+        </a>
+      </div>
     </div>
-);
+  );
 }

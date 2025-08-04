@@ -1,10 +1,12 @@
 // src/pages/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import './Auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // Get login function from context
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,28 +34,27 @@ const Login = () => {
 
       if (formData.email && formData.password) {
         // Determine role: placeholder logic, replace with real backend role
-        const role = formData.email.toLowerCase().includes('employer') ? 'employer' : 'gigworker';
+        const userType = formData.email.toLowerCase().includes('employer') ? 'GigPayer' : 'GigWorker';
 
-        // Persist auth info
+        // Create user data object
+        const userData = {
+          email: formData.email,
+          name: formData.email.split('@')[0],
+          type: userType, // Match your App.jsx user?.type check
+          loginTime: new Date().toISOString(),
+        };
+
+        // Store auth token separately
         localStorage.setItem('authToken', 'demo-token-' + Date.now());
-        localStorage.setItem(
-          'userData',
-          JSON.stringify({
-            email: formData.email,
-            name: formData.email.split('@')[0],
-            loginTime: new Date().toISOString(),
-            role,
-          })
-        );
+        
+        // Update AuthContext state (this also updates localStorage)
+        login(userData);
 
         setMessage('Login successful! Redirecting...');
+        
         // Redirect based on role
         setTimeout(() => {
-          if (role === 'employer') {
-            navigate('/dashboard/employer');
-          } else {
-            navigate('/dashboard/gigworker');
-          }
+          navigate('/dashboard/gigworker'); // This route exists in your App.jsx
         }, 500);
       } else {
         setMessage('Please fill in all fields');

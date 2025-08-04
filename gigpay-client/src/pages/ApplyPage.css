@@ -1,0 +1,21 @@
+.apply-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+  }
+  
+  .success-msg {
+    color: green;
+    margin-top: 10px;
+  }
+  

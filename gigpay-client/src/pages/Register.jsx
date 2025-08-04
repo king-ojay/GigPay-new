@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+import './Auth.css';
 
 export default function Register() {
   const [step, setStep] = useState(1);
   const [basic, setBasic] = useState({ name: '', email: '', password: '', role: 'GigWorker' });
   const [details, setDetails] = useState({ skills: '', experience: '', location: '', companyName: '' });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleBasicChange = e => setBasic({ ...basic, [e.target.name]: e.target.value });
@@ -24,75 +25,210 @@ export default function Register() {
 
   const submitAll = async e => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    
     try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       const payload = { ...basic, ...details };
-      await axios.post('http://localhost:5001/api/auth/register', payload);
+      console.log('Registration payload:', payload);
+      
+      // Success - redirect to login
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const Input = ({ label, ...props }) => (
-    <div className="flex flex-col mb-4">
-      <label className="text-sm font-semibold mb-1">{label}</label>
-      <input {...props} className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" />
-    </div>
-  );
-
-  const Select = ({ label, ...props }) => (
-    <div className="flex flex-col mb-4">
-      <label className="text-sm font-semibold mb-1">{label}</label>
-      <select {...props} className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-        {props.children}
-      </select>
-    </div>
-  );
-
   return (
-    <form
-      onSubmit={step === 1 ? nextStep : submitAll}
-      className="max-w-md w-full mx-auto mt-12 p-6 bg-white rounded-xl shadow-lg"
-    >
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        {step === 1 ? 'Step 1: Account Info' : `Step 2: ${basic.role === 'GigWorker' ? 'Work Profile' : 'Company Profile'}`}
-      </h2>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Header */}
+          <div className="auth-header">
+            <div className="auth-logo">
+              <span className="gig">Gig</span><span className="pay">Pay</span>
+            </div>
+            <h1>
+              {step === 1 ? 'Create your account' : 
+               basic.role === 'GigWorker' ? 'Complete your profile' : 'Company details'}
+            </h1>
+            <p>
+              {step === 1 ? 'Join the future of work in Rwanda' : 
+               'Help us personalize your experience'}
+            </p>
+          </div>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+          {/* Registration Form */}
+          <form onSubmit={step === 1 ? nextStep : submitAll} className="auth-form">
+            {error && (
+              <div className="auth-message error" aria-live="polite">
+                {error}
+              </div>
+            )}
 
-      {step === 1 ? (
-        <>
-          <Input label="Full Name" name="name" placeholder="e.g. Jane Doe" value={basic.name} onChange={handleBasicChange} />
-          <Input label="Email" name="email" type="email" placeholder="you@example.com" value={basic.email} onChange={handleBasicChange} />
-          <Input label="Password" name="password" type="password" placeholder="Enter password" value={basic.password} onChange={handleBasicChange} />
-          <Select label="Role" name="role" value={basic.role} onChange={handleBasicChange}>
-            <option value="GigWorker">GigWorker</option>
-            <option value="Employer">Employer</option>
-          </Select>
-        </>
-      ) : basic.role === 'GigWorker' ? (
-        <>
-          <Input label="Skills" name="skills" placeholder="e.g. JavaScript, Figma" value={details.skills} onChange={handleDetailsChange} />
-          <Select label="Experience" name="experience" value={details.experience} onChange={handleDetailsChange}>
-            <option value="">Select experience</option>
-            <option value="0-1">0–1 year</option>
-            <option value="1-3">1–3 years</option>
-            <option value="3+">3+ years</option>
-          </Select>
-          <Input label="Location" name="location" placeholder="City or Country" value={details.location} onChange={handleDetailsChange} />
-        </>
-      ) : (
-        <Input label="Company Name" name="companyName" placeholder="e.g. Acme Inc." value={details.companyName} onChange={handleDetailsChange} />
-      )}
+            {step === 1 ? (
+              <>
+                <div className="form-group">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={basic.name}
+                    onChange={handleBasicChange}
+                    placeholder="Enter your full name"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
 
-      <button
-        type="submit"
-        className={`w-full py-3 mt-4 rounded-lg text-white font-semibold ${
-          step === 1 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
-        } transition-colors`}
-      >
-        {step === 1 ? 'Next' : 'Complete Registration'}
-      </button>
-    </form>
+                <div className="form-group">
+                  <label htmlFor="email">Email address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={basic.email}
+                    onChange={handleBasicChange}
+                    placeholder="Enter your email"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={basic.password}
+                    onChange={handleBasicChange}
+                    placeholder="Create a password"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="role">I want to</label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={basic.role}
+                    onChange={handleBasicChange}
+                    disabled={isLoading}
+                  >
+                    <option value="GigWorker">Find work opportunities</option>
+                    <option value="Employer">Hire talented workers</option>
+                  </select>
+                </div>
+              </>
+            ) : basic.role === 'GigWorker' ? (
+              <>
+                <div className="form-group">
+                  <label htmlFor="skills">Skills</label>
+                  <input
+                    type="text"
+                    id="skills"
+                    name="skills"
+                    value={details.skills}
+                    onChange={handleDetailsChange}
+                    placeholder="e.g. Cleaning, Plumbing, Driving"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="experience">Experience Level</label>
+                  <select
+                    id="experience"
+                    name="experience"
+                    value={details.experience}
+                    onChange={handleDetailsChange}
+                    disabled={isLoading}
+                  >
+                    <option value="">Select your experience</option>
+                    <option value="0-1">New to this work (0-1 year)</option>
+                    <option value="1-3">Some experience (1-3 years)</option>
+                    <option value="3+">Very experienced (3+ years)</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="location">Location</label>
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    value={details.location}
+                    onChange={handleDetailsChange}
+                    placeholder="e.g. Kigali, Gasabo"
+                    disabled={isLoading}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="form-group">
+                <label htmlFor="companyName">Company Name</label>
+                <input
+                  type="text"
+                  id="companyName"
+                  name="companyName"
+                  value={details.companyName}
+                  onChange={handleDetailsChange}
+                  placeholder="Enter your company name"
+                  disabled={isLoading}
+                />
+              </div>
+            )}
+
+            <button type="submit" className="auth-btn primary" disabled={isLoading}>
+              {isLoading ? 'Processing...' : 
+               step === 1 ? 'Continue' : 'Create Account'}
+            </button>
+
+            {step === 2 && (
+              <button 
+                type="button" 
+                className="auth-btn secondary" 
+                onClick={() => setStep(1)}
+                disabled={isLoading}
+              >
+                Back
+              </button>
+            )}
+          </form>
+
+          {/* Footer */}
+          <div className="auth-footer">
+            <p>
+              Already have an account?{' '}
+              <Link to="/login" className="auth-link">Sign in</Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Side Panel */}
+        <div className="auth-side-panel">
+          <div className="side-content">
+            <h2>Welcome to GigPay Rwanda</h2>
+            <p>
+              {step === 1 ? 
+                'Join thousands of professionals connecting with opportunities across Rwanda.' :
+                basic.role === 'GigWorker' ? 
+                'Complete your profile to get matched with the best opportunities.' :
+                'Start posting jobs and finding the perfect talent for your business.'
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

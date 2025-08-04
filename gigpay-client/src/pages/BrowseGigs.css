@@ -1,0 +1,23 @@
+.browse-container {
+    padding: 20px;
+  }
+  
+  .search-input {
+    padding: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .gig-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .gig-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+  }
+  

@@ -1,28 +1,25 @@
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import './JobDetails.css';
 
 export default function JobDetails() {
-  const { id } = useParams();
+  const { jobId } = useParams();
   const [job, setJob] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/jobs/${id}`)
-      .then((res) => res.json())
-      .then((data) => setJob(data))
-      .catch((err) => console.error(err));
-  }, [id]);
+    fetch(`http://localhost:5000/api/jobs/${jobId}`)
+      .then(res => res.json())
+      .then(data => setJob(data));
+  }, [jobId]);
 
-  if (!job) return <div className="p-4">Loading job details...</div>;
+  if (!job) return <p>Loading job...</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white shadow rounded-xl mt-6">
-      <h1 className="text-2xl font-bold">{job.title}</h1>
-      <p className="text-gray-600 mt-2">{job.company}</p>
-      <p className="mt-4">{job.description}</p>
-      <p className="mt-2 text-sm text-gray-500">Location: {job.location}</p>
-      <button className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        Apply Now
-      </button>
+    <div className="job-details">
+      <h2>{job.title}</h2>
+      <p><strong>Description:</strong> {job.description}</p>
+      <p><strong>Location:</strong> {job.location}</p>
+      <p><strong>Budget:</strong> RWF {job.budget}</p>
     </div>
   );
 }

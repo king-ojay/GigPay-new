@@ -1,27 +1,28 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import api from '../api';
+import React, { useEffect, useState } from 'react';
+import './MyApplications.css';
 
-const MyApplications = () => {
-  const { user } = useContext(AuthContext);
-  const [apps, setApps] = useState([]);
+export default function MyApplications() {
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    api.get(`/applications/user/${user._id}`).then(res => setApps(res.data));
-  }, [user]);
+    fetch('http://localhost:5000/api/my-applications')
+      .then(res => res.json())
+      .then(data => setApplications(data))
+      .catch(err => console.error(err));
+  }, []);
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">My Applications</h1>
-      {apps.map(app => (
-        <div key={app._id} className="border p-4 rounded mb-2 bg-white">
-          <p><strong>Job Title:</strong> {app.job?.title}</p>
-          <p><strong>Message:</strong> {app.message}</p>
-          <p><strong>Status:</strong> {app.status}</p>
-        </div>
-      ))}
+    <div className="applications-container">
+      <h2>My Applications</h2>
+      <ul>
+        {applications.map(app => (
+          <li key={app._id} className="application-card">
+            <h3>{app.jobTitle}</h3>
+            <p><strong>Status:</strong> {app.status}</p>
+            <p><strong>Cover Letter:</strong> {app.coverLetter}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-};
-
-export default MyApplications;
+}

@@ -1,108 +1,73 @@
-import React, { useEffect, useState, useContext } from "react";
-import api from "../api";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+// src/pages/Profile.jsx
+import React, { useContext, useState, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import '../pages/Profile.css';
 
 export default function Profile() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    bio: "",
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
+    bio: '',
   });
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    api
-      .get(`/users/${user.id}`)
-      .then((res) => {
-        setFormData({
-          name: res.data.name || "",
-          email: res.data.email || "",
-          bio: res.data.bio || "",
-        });
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load profile:", err);
-        setLoading(false);
+    // You can fetch actual profile data here if connected to backend
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        location: user.location || '',
+        bio: user.bio || '',
       });
-  }, [user, navigate]);
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    api
-      .put(`/users/${user.id}`, formData)
-      .then((res) => {
-        alert("Profile updated successfully");
-        setUser(res.data); // Update global user context
-      })
-      .catch((err) => {
-        console.error("Failed to update profile:", err);
-        alert("Failed to update profile");
-      });
+    console.log('Saving profile...', formData);
+    alert('Profile updated!');
+    // TODO: Send updated profile to backend
   };
-
-  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-4 border rounded shadow">
-      <h2 className="text-xl font-bold mb-4">My Profile</h2>
-      <form onSubmit={handleUpdate} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Name</label>
-          <input
-            name="name"
-            type="text"
-            className="w-full border p-2 rounded"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </div>
+    <div className="profile-container">
+      <h2>My Profile</h2>
+      <form onSubmit={handleSubmit} className="profile-form">
+        <label>
+          Full Name
+          <input name="name" value={formData.name} onChange={handleChange} required />
+        </label>
 
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input
-            name="email"
-            type="email"
-            className="w-full border p-2 rounded"
-            value={formData.email}
-            onChange={handleChange}
-            disabled
-          />
-        </div>
+        <label>
+          Email
+          <input name="email" value={formData.email} onChange={handleChange} type="email" required />
+        </label>
 
-        <div>
-          <label className="block text-sm font-medium">Bio</label>
-          <textarea
-            name="bio"
-            className="w-full border p-2 rounded"
-            value={formData.bio}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
+        <label>
+          Phone Number
+          <input name="phone" value={formData.phone} onChange={handleChange} type="tel" />
+        </label>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Update Profile
-        </button>
+        <label>
+          Location
+          <input name="location" value={formData.location} onChange={handleChange} />
+        </label>
+
+        <label>
+          Short Bio
+          <textarea name="bio" value={formData.bio} onChange={handleChange} rows={4} />
+        </label>
+
+        <button type="submit">Save Changes</button>
       </form>
     </div>
   );
