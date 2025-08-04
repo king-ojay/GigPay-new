@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   preview: {
-    allowedHosts: process.env.NODE_ENV === 'production' 
-      ? ['all'] 
-      : ['localhost', '127.0.0.1']
+    host: '0.0.0.0',
+    port: process.env.PORT || 4173,
+    allowedHosts: ['all']
   }
 })
