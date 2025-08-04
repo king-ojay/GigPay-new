@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import { Link } from 'react-router-dom';
-import './home.css';
+import './Home.css';
 
 export default function Home() {
   return (
@@ -32,7 +32,7 @@ export default function Home() {
                   Need urgent plumbing help. Kitchen sink is leaking and pipes need repair...
                 </p>
                 <div className="card-footer">
-                  <span className="price">$80-120</span>
+                  <span className="price">80-120k RWF </span>
                   <button className="btn-primary small">Apply Now</button>
                 </div>
               </div>
