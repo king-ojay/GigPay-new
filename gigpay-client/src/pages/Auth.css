@@ -1,4 +1,4 @@
-/* Auth.css - LinkedIn-inspired Login/Register Styles */
+/* Auth.css - Mobile-First Responsive Design */
 * {
     box-sizing: border-box;
   }
@@ -7,6 +7,8 @@
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
     background-color: #f3f2ef;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   .auth-page {
@@ -14,15 +16,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 16px;
     background-color: #f3f2ef;
   }
   
+  /* Mobile-first container */
   .auth-container {
     display: flex;
-    max-width: 1128px;
+    flex-direction: column;
     width: 100%;
-    min-height: 560px;
+    max-width: 400px;
+    min-height: auto;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -31,22 +35,21 @@
   
   .auth-card {
     flex: 1;
-    padding: 48px 40px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: 400px;
   }
   
   .auth-header {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     text-align: center;
   }
   
   .auth-logo {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   
   .auth-logo .gig {
@@ -58,7 +61,7 @@
   }
   
   .auth-header h1 {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.9);
     margin: 0 0 8px;
@@ -66,9 +69,10 @@
   }
   
   .auth-header p {
-    font-size: 16px;
+    font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
     margin: 0;
+    padding: 0 10px;
   }
   
   .auth-form {
@@ -81,6 +85,7 @@
     border-radius: 4px;
     margin-bottom: 16px;
     font-size: 14px;
+    word-wrap: break-word;
   }
   
   .auth-message.error {
@@ -107,9 +112,10 @@
     margin-bottom: 4px;
   }
   
-  .form-group input {
+  .form-group input,
+  .form-group select {
     width: 100%;
-    height: 52px;
+    height: 48px;
     padding: 12px 16px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 4px;
@@ -117,17 +123,31 @@
     line-height: 1.33;
     background-color: white;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
   
-  .form-group input:focus {
+  .form-group input:focus,
+  .form-group select:focus {
     outline: none;
     border-color: #0a66c2;
     box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
   }
   
-  .form-group input:disabled {
+  .form-group input:disabled,
+  .form-group select:disabled {
     background-color: rgba(0, 0, 0, 0.05);
     cursor: not-allowed;
+  }
+  
+  .form-group select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
   }
   
   .form-options {
@@ -135,6 +155,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   
   .checkbox-label {
@@ -143,6 +165,8 @@
     font-size: 14px;
     color: rgba(0, 0, 0, 0.75);
     cursor: pointer;
+    flex: 1;
+    min-width: 120px;
   }
   
   .checkbox-label input[type="checkbox"] {
@@ -162,6 +186,7 @@
     margin-right: 8px;
     position: relative;
     transition: all 0.15s ease-in-out;
+    flex-shrink: 0;
   }
   
   .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
@@ -186,6 +211,7 @@
     color: #0a66c2;
     text-decoration: none;
     font-weight: 600;
+    flex-shrink: 0;
   }
   
   .forgot-link:hover {
@@ -193,7 +219,7 @@
   }
   
   .auth-btn {
-    height: 52px;
+    height: 48px;
     border-radius: 24px;
     font-size: 16px;
     font-weight: 600;
@@ -203,6 +229,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
   
   .auth-btn.primary {
@@ -213,6 +247,10 @@
   
   .auth-btn.primary:hover:not(:disabled) {
     background-color: #004182;
+  }
+  
+  .auth-btn.primary:active:not(:disabled) {
+    transform: translateY(1px);
   }
   
   .auth-btn.secondary {
@@ -227,32 +265,13 @@
     background-color: rgba(10, 102, 194, 0.1);
   }
   
-  .form-group select {
-    width: 100%;
-    height: 52px;
-    padding: 12px 16px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    font-size: 16px;
-    line-height: 1.33;
-    background-color: white;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    cursor: pointer;
-  }
-  
-  .form-group select:focus {
-    outline: none;
-    border-color: #0a66c2;
-    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
-  }
-  
   .auth-footer {
     text-align: center;
     margin-top: 24px;
   }
   
   .auth-footer p {
-    font-size: 16px;
+    font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
     margin: 0;
   }
@@ -267,182 +286,38 @@
     text-decoration: underline;
   }
   
+  /* Side panel - hidden on mobile, shown on desktop */
   .auth-side-panel {
-    flex: 1;
-    background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px;
-    color: white;
-    position: relative;
-    overflow: hidden;
+    display: none;
   }
   
-  .auth-side-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
-  }
-  
-  .side-content {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    max-width: 400px;
-  }
-  
-  .side-content h2 {
-    font-size: 36px;
-    font-weight: 400;
-    margin: 0 0 24px;
-    line-height: 1.25;
-  }
-  
-  .side-content p {
-    font-size: 18px;
-    line-height: 1.5;
-    opacity: 0.9;
+  /* Dashboard Styles - Mobile-First */
+  .gigworker-dashboard,
+  .browse-container {
+    max-width: 100%;
     margin: 0;
-  }
-  
-  /* Register Page Styles - LinkedIn inspired */
-  .register-container,
-  .max-w-md.w-full.mx-auto.mt-12.p-6.bg-white.rounded-xl.shadow-lg {
-    min-height: 100vh;
-    background-color: #f3f2ef;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  
-  /* Override Tailwind styles for Register form */
-  .max-w-md.w-full.mx-auto.mt-12.p-6.bg-white.rounded-xl.shadow-lg {
-    background: white !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    padding: 48px 40px !important;
-    width: 100% !important;
-    max-width: 400px !important;
-    margin: 0 !important;
-    min-height: auto !important;
-  }
-  
-  /* Override Tailwind text styles for Register */
-  .text-2xl.font-bold.mb-6.text-gray-800 {
-    font-size: 32px !important;
-    font-weight: 400 !important;
-    color: rgba(0, 0, 0, 0.9) !important;
-    margin: 0 0 32px !important;
-    text-align: center;
-  }
-  
-  .text-red-600.mb-4 {
-    color: #d73502 !important;
-    background-color: #fdf2f2 !important;
-    border: 1px solid #fecaca !important;
-    padding: 12px 16px !important;
-    border-radius: 4px !important;
-    font-size: 14px !important;
-    margin-bottom: 16px !important;
-  }
-  
-  /* Override Tailwind form styles */
-  .flex.flex-col.mb-4 {
-    margin-bottom: 16px !important;
-  }
-  
-  .text-sm.font-semibold.mb-1 {
-    display: block !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    color: rgba(0, 0, 0, 0.9) !important;
-    margin-bottom: 4px !important;
-  }
-  
-  /* Override Tailwind input and select styles */
-  .p-3.border.border-gray-300.rounded-lg.focus\:outline-none.focus\:ring-2.focus\:ring-amber-500 {
-    width: 100% !important;
-    height: 52px !important;
-    padding: 12px 16px !important;
-    border: 1px solid rgba(0, 0, 0, 0.15) !important;
-    border-radius: 4px !important;
-    font-size: 16px !important;
-    line-height: 1.33 !important;
-    background-color: white !important;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
-  }
-  
-  .p-3.border.border-gray-300.rounded-lg.focus\:outline-none.focus\:ring-2.focus\:ring-amber-500:focus {
-    outline: none !important;
-    border-color: #0a66c2 !important;
-    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2) !important;
-  }
-  
-  /* Override Tailwind button styles */
-  .w-full.py-3.mt-4.rounded-lg.text-white.font-semibold.transition-colors {
-    width: 100% !important;
-    height: 52px !important;
-    border-radius: 24px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    cursor: pointer !important;
-    color: white !important;
-    margin-top: 16px !important;
-    transition: all 0.15s ease-in-out !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  
-  .bg-blue-600.hover\:bg-blue-700 {
-    background-color: #0a66c2 !important;
-  }
-  
-  .bg-blue-600.hover\:bg-blue-700:hover {
-    background-color: #004182 !important;
-  }
-  
-  .bg-green-600.hover\:bg-green-700 {
-    background-color: #057642 !important;
-  }
-  
-  .bg-green-600.hover\:bg-green-700:hover {
-    background-color: #046c20 !important;
-  }
-  
-  /* Dashboard Styles - LinkedIn inspired */
-  .gigworker-dashboard {
-    max-width: 1128px;
-    margin: 0 auto;
-    padding: 24px;
+    padding: 16px;
     background-color: #f3f2ef;
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   }
   
-  .gigworker-dashboard h2 {
-    font-size: 40px;
+  .gigworker-dashboard h2,
+  .browse-container h2 {
+    font-size: 28px;
     font-weight: 300;
     color: rgba(0, 0, 0, 0.9);
-    margin: 0 0 32px;
+    margin: 0 0 24px;
     text-align: center;
+    line-height: 1.2;
   }
   
-  .gigworker-dashboard input[type="text"] {
+  .gigworker-dashboard input[type="text"],
+  .search-input {
     width: 100%;
-    max-width: 600px;
-    height: 52px;
+    height: 48px;
     padding: 12px 16px;
-    margin: 0 auto 32px;
-    display: block;
+    margin: 0 0 24px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     font-size: 16px;
@@ -451,50 +326,51 @@
     transition: all 0.15s ease-in-out;
   }
   
-  .gigworker-dashboard input[type="text"]:focus {
+  .gigworker-dashboard input[type="text"]:focus,
+  .search-input:focus {
     outline: none;
     border-color: #0a66c2;
     box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
   }
   
-  .job-list {
+  .job-list,
+  .browse-container ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 16px;
-    justify-content: center;
-    justify-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
   }
   
-  .job-card {
+  .job-card,
+  .browse-container li {
     background: white;
     border-radius: 8px;
-    padding: 24px;
+    padding: 20px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     transition: all 0.15s ease-in-out;
-    position: relative;
     width: 100%;
-    max-width: 400px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
-  .job-card:hover {
+  .job-card:hover,
+  .browse-container li:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
   }
   
-  .job-card h3 {
-    font-size: 20px;
+  .job-card h3,
+  .browse-container li h3 {
+    font-size: 18px;
     font-weight: 600;
     color: #0a66c2;
     margin: 0 0 12px;
     line-height: 1.3;
   }
   
-  .job-card p {
+  .job-card p,
+  .browse-container li p {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
     margin: 8px 0;
@@ -519,92 +395,16 @@
     margin-top: 16px;
     width: 100%;
     height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .job-card button:hover {
     background-color: #004182;
   }
   
-  /* Browse Gigs Styles */
-  .browse-container {
-    max-width: 1128px;
-    margin: 0 auto;
-    padding: 24px;
-    background-color: #f3f2ef;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-  }
-  
-  .browse-container h2 {
-    font-size: 40px;
-    font-weight: 300;
-    color: rgba(0, 0, 0, 0.9);
-    margin: 0 0 32px;
-    text-align: center;
-  }
-  
-  .search-input {
-    width: 100%;
-    max-width: 600px;
-    height: 52px;
-    padding: 12px 16px;
-    margin: 0 auto 32px;
-    display: block;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    font-size: 16px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    transition: all 0.15s ease-in-out;
-  }
-  
-  .search-input:focus {
-    outline: none;
-    border-color: #0a66c2;
-    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
-  }
-  
-  .browse-container ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: 16px;
-    justify-content: center;
-    justify-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .browse-container li {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    transition: all 0.15s ease-in-out;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .browse-container li:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
-  }
-  
-  .browse-container li h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #0a66c2;
-    margin: 0 0 12px;
-    line-height: 1.3;
-  }
-  
-  .browse-container li p {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.6);
-    margin: 8px 0 16px;
-    line-height: 1.4;
+  .job-card button:active {
+    transform: translateY(1px);
   }
   
   .browse-container a {
@@ -618,38 +418,256 @@
     text-decoration: underline;
   }
   
-  /* Responsive Design */
-  @media (max-width: 768px) {
+  /* Tablet Styles */
+  @media (min-width: 768px) {
+    .auth-page {
+      padding: 24px;
+    }
+  
     .auth-container {
-      flex-direction: column;
+      max-width: 800px;
+      flex-direction: row;
+    }
+  
+    .auth-card {
+      padding: 40px 32px;
       max-width: 400px;
+    }
+  
+    .auth-header h1 {
+      font-size: 28px;
+    }
+  
+    .auth-header p {
+      font-size: 16px;
+      padding: 0;
+    }
+  
+    .auth-logo {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+  
+    .form-group input,
+    .form-group select {
+      height: 52px;
+    }
+  
+    .auth-btn {
+      height: 52px;
+    }
+  
+    .auth-side-panel {
+      display: flex;
+      flex: 1;
+      background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+  
+    .auth-side-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+    }
+  
+    .side-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 350px;
+    }
+  
+    .side-content h2 {
+      font-size: 28px;
+      font-weight: 400;
+      margin: 0 0 20px;
+      line-height: 1.25;
+    }
+  
+    .side-content p {
+      font-size: 16px;
+      line-height: 1.5;
+      opacity: 0.9;
+      margin: 0;
+    }
+  
+    .gigworker-dashboard,
+    .browse-container {
+      padding: 24px;
+      max-width: 1128px;
+      margin: 0 auto;
+    }
+  
+    .gigworker-dashboard h2,
+    .browse-container h2 {
+      font-size: 36px;
+      margin-bottom: 32px;
+    }
+  
+    .gigworker-dashboard input[type="text"],
+    .search-input {
+      max-width: 600px;
+      height: 52px;
+      margin: 0 auto 32px;
+      display: block;
+    }
+  
+    .job-list,
+    .browse-container ul {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  
+    .job-card,
+    .browse-container li {
+      padding: 24px;
+    }
+  
+    .job-card h3,
+    .browse-container li h3 {
+      font-size: 20px;
+    }
+  }
+  
+  /* Desktop Styles */
+  @media (min-width: 1024px) {
+    .auth-container {
+      max-width: 1128px;
+      min-height: 560px;
+    }
+  
+    .auth-card {
+      padding: 48px 40px;
+    }
+  
+    .auth-header h1 {
+      font-size: 32px;
+    }
+  
+    .auth-logo {
+      font-size: 36px;
+      margin-bottom: 24px;
+    }
+  
+    .side-content h2 {
+      font-size: 36px;
+      margin-bottom: 24px;
+    }
+  
+    .side-content p {
+      font-size: 18px;
+    }
+  
+    .auth-side-panel {
+      padding: 48px;
+    }
+  
+    .gigworker-dashboard h2,
+    .browse-container h2 {
+      font-size: 40px;
+    }
+  
+    .job-list,
+    .browse-container ul {
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    }
+  }
+  
+  /* High DPI / Retina Display Support */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .auth-logo,
+    .auth-header h1,
+    .job-card h3 {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+  
+  /* Dark mode support (if user prefers) */
+  @media (prefers-color-scheme: dark) {
+    /* You can add dark mode styles here if needed */
+  }
+  
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .form-group input,
+    .form-group select {
+      border-width: 2px;
+    }
+    
+    .auth-btn {
+      border-width: 2px;
+    }
+  }
+  
+  /* Focus styles for keyboard navigation */
+  .auth-btn:focus-visible,
+  .form-group input:focus-visible,
+  .form-group select:focus-visible,
+  .auth-link:focus-visible,
+  .forgot-link:focus-visible {
+    outline: 2px solid #0a66c2;
+    outline-offset: 2px;
+  }
+  
+  /* Loading states */
+  .auth-btn:disabled {
+    position: relative;
+  }
+  
+  .auth-btn:disabled::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Print styles */
+  @media print {
+    .auth-page {
+      background: white;
     }
     
     .auth-side-panel {
-      min-height: 200px;
-      padding: 32px 24px;
+      display: none;
     }
     
-    .side-content h2 {
-      font-size: 24px;
-    }
-    
-    .side-content p {
-      font-size: 16px;
-    }
-    
-    .auth-card {
-      padding: 32px 24px;
-      max-width: none;
-    }
-    
-    .gigworker-dashboard,
-    .browse-container {
-      padding: 16px;
-    }
-    
-    .job-list,
-    .browse-container ul {
-      grid-template-columns: 1fr;
+    .auth-container {
+      box-shadow: none;
+      border: 1px solid #ccc;
     }
   }

@@ -11,7 +11,7 @@ import GigWorkerDashboard from './pages/GigWorkerDashboard';
 import EmployerDashboard from './pages/EmployerDashboard';
 import PostGig from './pages/PostGig';
 import BrowseGigs from './pages/BrowseGigs';
-import Profile from './pages/Profile'; // ADD THIS IMPORT
+import Profile from './pages/Profile';
 
 function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -23,14 +23,33 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/browse-gigs" element={<BrowseGigs />} />
       
-      {/* Unified dashboard route that shows correct dashboard based on user type */}
+      {/* ✅ ADDED: Missing routes that Register.jsx redirects to */}
+      <Route
+        path="/employer-dashboard"
+        element={
+          <ProtectedRoute>
+            <EmployerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/gigworker-dashboard"
+        element={
+          <ProtectedRoute>
+            <GigWorkerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Existing unified dashboard route */}
       <Route
         path="/dashboard/gigworker"
         element={
           <ProtectedRoute>
-            {user?.type === 'GigWorker' ? (
+            {user?.role === 'GigWorker' ? (
               <GigWorkerDashboard />
-            ) : user?.type === 'GigPayer' ? (
+            ) : user?.role === 'Employer' ? (
               <EmployerDashboard />
             ) : (
               <div className="error-page">
@@ -42,7 +61,7 @@ function AppRoutes() {
         }
       />
       
-      {/* Separate employer dashboard route (optional - you can remove if not needed) */}
+      {/* Existing employer dashboard route */}
       <Route
         path="/dashboard/employer"
         element={
@@ -52,12 +71,12 @@ function AppRoutes() {
         }
       />
       
-      {/* Post gig route - only for employers */}
+      {/* Post gig route - fixed role check */}
       <Route
         path="/post-gig"
         element={
           <ProtectedRoute>
-            {user?.type === 'GigPayer' ? (
+            {user?.role === 'Employer' ? (
               <PostGig />
             ) : (
               <div className="error-page">
@@ -69,7 +88,7 @@ function AppRoutes() {
         }
       />
       
-      {/* Profile route - FIXED */}
+      {/* Profile route */}
       <Route
         path="/profile"
         element={
@@ -79,7 +98,7 @@ function AppRoutes() {
         }
       />
 
-      {/* Add Apply route for the apply button */}
+      {/* Apply route */}
       <Route
         path="/apply/:gigId"
         element={
