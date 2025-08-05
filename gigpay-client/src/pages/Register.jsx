@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // ✅ ADDED: Import AuthContext
 import './Auth.css';
 
 export default function Register() {
@@ -9,6 +10,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // ✅ ADDED: Get login function from context
 
   const handleBasicChange = e => setBasic({ ...basic, [e.target.name]: e.target.value });
   const handleDetailsChange = e => setDetails({ ...details, [e.target.name]: e.target.value });
@@ -44,7 +46,9 @@ export default function Register() {
       if (response.ok) {
         // Store auth data
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // ✅ FIXED: Use AuthContext login function
+        login(data.user);
         
         // ✅ FIXED: Redirect based on role
         if (basic.role === 'Employer') {
@@ -59,15 +63,25 @@ export default function Register() {
       // Fallback for development/testing - simulate success
       console.log('Using fallback registration for development');
       
-      // Simulate user data
+      // ✅ FIXED: Create proper user data with consistent structure
       const userData = {
         id: Date.now(),
         name: basic.name,
         email: basic.email,
-        role: basic.role
+        role: basic.role, // This matches what your routes expect
+        ...details, // Include profile details
+        registrationDate: new Date().toISOString()
       };
       
-      localStorage.setItem('user', JSON.stringify(userData));
+      console.log('Creating user with data:', userData); // Debug log
+      
+      // Store in users list for login functionality
+      const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      existingUsers.push(userData);
+      localStorage.setItem('users', JSON.stringify(existingUsers));
+      
+      // ✅ FIXED: Use AuthContext login function instead of direct localStorage
+      login(userData);
       
       // ✅ FIXED: Redirect based on role
       if (basic.role === 'Employer') {
@@ -163,6 +177,11 @@ export default function Register() {
                     <option value="GigWorker">Find work opportunities</option>
                     <option value="Employer">Hire talented workers</option>
                   </select>
+                </div>
+
+                {/* ✅ ADDED: Debug info to see selected role */}
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+                  Selected role: {basic.role}
                 </div>
               </>
             ) : basic.role === 'GigWorker' ? (

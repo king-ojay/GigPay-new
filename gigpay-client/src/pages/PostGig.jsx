@@ -64,11 +64,17 @@ export default function PostGig() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, this would submit to your API
-    console.log('Gig posted:', formData);
-    alert('Gig posted successfully! (This would actually submit to your backend)');
+
+    try {
+      const res = await axios.post('/api/gigs', { ...formData, postedBy: user?._id });
+      alert('Gig posted successfully!');
+      console.log('Response:', res.data);
+    } catch (err) {
+      console.error('Error posting gig:', err);
+      alert('Failed to post gig. Please try again later.');
+    }
   };
 
   return (

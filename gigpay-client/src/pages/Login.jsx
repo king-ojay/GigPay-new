@@ -6,7 +6,7 @@ import './Auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // Get login function from context
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,28 +33,47 @@ const Login = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       if (formData.email && formData.password) {
-        // Determine role: placeholder logic, replace with real backend role
-        const userType = formData.email.toLowerCase().includes('employer') ? 'GigPayer' : 'GigWorker';
+        // 🔍 Check existing users in localStorage first
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const existingUser = existingUsers.find(user => user.email === formData.email);
 
-        // Create user data object
-        const userData = {
-          email: formData.email,
-          name: formData.email.split('@')[0],
-          type: userType, // Match your App.jsx user?.type check
-          loginTime: new Date().toISOString(),
-        };
+        let userData;
+        
+        if (existingUser) {
+          // Use existing user data
+          userData = existingUser;
+        } else {
+          // Create new user for demo - determine role based on email
+          const role = formData.email.toLowerCase().includes('employer') ? 'Employer' : 'GigWorker';
+          
+          userData = {
+            id: Date.now(),
+            email: formData.email,
+            name: formData.email.split('@')[0],
+            role: role, // ✅ FIXED: Use 'role' not 'type'
+            loginTime: new Date().toISOString(),
+          };
 
-        // Store auth token separately
+          // Save to users list for future logins
+          existingUsers.push(userData);
+          localStorage.setItem('users', JSON.stringify(existingUsers));
+        }
+
+        // Store auth token
         localStorage.setItem('authToken', 'demo-token-' + Date.now());
         
-        // Update AuthContext state (this also updates localStorage)
+        // ✅ FIXED: Use AuthContext login function
         login(userData);
 
         setMessage('Login successful! Redirecting...');
         
-        // Redirect based on role
+        // ✅ FIXED: Redirect based on actual user role
         setTimeout(() => {
-          navigate('/dashboard/gigworker'); // This route exists in your App.jsx
+          if (userData.role === 'Employer') {
+            navigate('/employer-dashboard');
+          } else {
+            navigate('/gigworker-dashboard');
+          }
         }, 500);
       } else {
         setMessage('Please fill in all fields');
@@ -153,6 +172,13 @@ const Login = () => {
           <div className="side-content">
             <h2>Join the future of work</h2>
             <p>Connect with opportunities that match your skills and grow your career in the gig economy.</p>
+
+            {/* Demo users for testing */}
+            <div style={{ marginTop: '20px', fontSize: '12px', opacity: 0.7 }}>
+              <p><strong>Demo accounts:</strong></p>
+              <p>Employer: employer@test.com</p>
+              <p>GigWorker: worker@test.com</p>
+            </div>
           </div>
         </div>
       </div>

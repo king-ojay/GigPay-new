@@ -1,164 +1,273 @@
-// src/pages/PostJob.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import './PostJob.css';
+import './PostGig.css';
 
-const PostJob = () => {
+const PostGig = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
   const [formData, setFormData] = useState({
     title: '',
-    company: '',
-    location: '',
-    type: 'Contract',
-    rate: '',
-    rateType: 'hourly',
-    duration: '',
     description: '',
+    category: '',
+    location: '',
+    budget: '',
+    duration: '',
     requirements: '',
-    skills: [],
-    experienceLevel: 'Intermediate',
-    category: 'Development'
+    contactInfo: ''
   });
 
-  const [skillInput, setSkillInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const jobCategories = [
-    'Development', 'Design', 'Data Science', 'Marketing',
-    'Writing', 'Sales', 'Customer Service', 'Other'
+  const categories = [
+    'Technology',
+    'Design & Creative',
+    'Writing & Translation',
+    'Sales & Marketing',
+    'Admin & Customer Support',
+    'Finance & Accounting',
+    'Engineering & Architecture',
+    'Legal',
+    'Manual Labor',
+    'Domestic Services',
+    'Transportation',
+    'Other'
   ];
 
-  const experienceLevels = ['Entry Level', 'Intermediate', 'Expert'];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleAddSkill = (e) => {
-    e.preventDefault();
-    const trimmedSkill = skillInput.trim();
-    if (trimmedSkill && !formData.skills.includes(trimmedSkill)) {
-      setFormData(prev => ({
-        ...prev,
-        skills: [...prev.skills, trimmedSkill]
-      }));
-      setSkillInput('');
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = 'Job title is required';
-    if (!formData.company.trim()) newErrors.company = 'Company name is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
-    if (!formData.rate.trim()) newErrors.rate = 'Rate is required';
-    if (!formData.description.trim()) newErrors.description = 'Job description is required';
-    if (formData.skills.length === 0) newErrors.skills = 'At least one skill is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
+    // Basic validation
+    if (!formData.title || !formData.description || !formData.budget) {
+      setError('Please fill in all required fields');
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const jobData = {
+      // Create job object
+      const newJob = {
+        id: Date.now(), // Simple ID generation
         ...formData,
-        id: Date.now(),
-        postedBy: user?.email || 'employer@example.com',
-        postedDate: new Date().toISOString(),
-        status: 'Active',
-        applicants: 0
+        employerId: user.id,
+        employerName: user.name,
+        employerEmail: user.email,
+        datePosted: new Date().toISOString(),
+        applicants: [],
+        status: 'active'
       };
 
-      console.log('Job posted:', jobData);
-      alert('Job posted successfully! You can manage it from your dashboard.');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error posting job:', error);
-      alert('Error posting job. Please try again.');
+      // Get existing jobs from localStorage
+      const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+      
+      // Add new job
+      existingJobs.push(newJob);
+      
+      // Save back to localStorage
+      localStorage.setItem('jobs', JSON.stringify(existingJobs));
+
+      // Update employer's posted jobs count
+      const employerJobs = existingJobs.filter(job => job.employerId === user.id);
+      localStorage.setItem('employerJobsCount', employerJobs.length.toString());
+
+      setSuccess('Job posted successfully!');
+      
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        location: '',
+        budget: '',
+        duration: '',
+        requirements: '',
+        contactInfo: ''
+      });
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate('/employer-dashboard');
+      }, 2000);
+
+    } catch (err) {
+      setError('Failed to post job. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="post-job-page">
-      <div className="post-job-container">
-        <div className="post-job-header">
+    <div className="post-gig-page">
+      <div className="post-gig-container">
+        <div className="post-gig-header">
           <h1>Post a New Job</h1>
-          <p>Find the perfect talent for your project</p>
+          <p>Find the perfect talent for your project in Rwanda</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="post-job-form">
-          {/* Basic Info and Job Details here... */}
+        <form onSubmit={handleSubmit} className="post-gig-form">
+          {error && (
+            <div className="message error">
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="message success">
+              {success}
+            </div>
+          )}
 
-          {/* Job Description */}
-          <div className="form-section">
-            <h2>Job Description</h2>
+          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="description">Description *</label>
-              <textarea
-                id="description"
-                name="description"
-                rows="6"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe the job responsibilities, expectations, etc."
-                className={errors.description ? 'error' : ''}
+              <label htmlFor="title">Job Title *</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="e.g. Web Developer, Graphic Designer"
+                required
+                disabled={isLoading}
               />
-              {errors.description && <span className="error-text">{errors.description}</span>}
             </div>
-          </div>
 
-          {/* Skills */}
-          <div className="form-section">
-            <h2>Skills Required *</h2>
             <div className="form-group">
-              <div className="skill-input-wrapper">
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  placeholder="e.g. JavaScript, Figma"
-                />
-                <button onClick={handleAddSkill} className="add-skill-btn">Add</button>
-              </div>
-              {errors.skills && <span className="error-text">{errors.skills}</span>}
-              <div className="skills-list">
-                {formData.skills.map((skill, idx) => (
-                  <span key={idx} className="skill-tag">
-                    {skill}
-                    <button type="button" onClick={() => handleRemoveSkill(skill)}>×</button>
-                  </span>
+              <label htmlFor="category">Category *</label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
           </div>
 
-          {/* Submit Button */}
+          <div className="form-group">
+            <label htmlFor="description">Job Description *</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Describe what you need done, project goals, and any specific requirements..."
+              rows="6"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="location">Location</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="e.g. Kigali, Gasabo or Remote"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="budget">Budget (RWF) *</label>
+              <input
+                type="number"
+                id="budget"
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                placeholder="e.g. 50000"
+                min="1000"
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="duration">Project Duration</label>
+            <select
+              id="duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              disabled={isLoading}
+            >
+              <option value="">Select duration</option>
+              <option value="1-3 days">1-3 days</option>
+              <option value="1 week">1 week</option>
+              <option value="2-4 weeks">2-4 weeks</option>
+              <option value="1-3 months">1-3 months</option>
+              <option value="3+ months">3+ months</option>
+              <option value="Ongoing">Ongoing</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="requirements">Requirements & Skills</label>
+            <textarea
+              id="requirements"
+              name="requirements"
+              value={formData.requirements}
+              onChange={handleChange}
+              placeholder="List required skills, experience level, tools, etc..."
+              rows="4"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contactInfo">Contact Information</label>
+            <input
+              type="text"
+              id="contactInfo"
+              name="contactInfo"
+              value={formData.contactInfo}
+              onChange={handleChange}
+              placeholder="Phone number or preferred contact method"
+              disabled={isLoading}
+            />
+          </div>
+
           <div className="form-actions">
-            <button type="submit" className="submit-btn" disabled={isSubmitting}>
-              {isSubmitting ? 'Posting Job...' : 'Post Job'}
+            <button
+              type="button"
+              onClick={() => navigate('/employer-dashboard')}
+              className="btn-secondary"
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Posting...' : 'Post Job'}
             </button>
           </div>
         </form>
@@ -167,4 +276,4 @@ const PostJob = () => {
   );
 };
 
-export default PostJob;
+export default PostGig;

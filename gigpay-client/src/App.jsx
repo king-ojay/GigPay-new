@@ -23,12 +23,20 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/browse-gigs" element={<BrowseGigs />} />
       
-      {/* ✅ ADDED: Missing routes that Register.jsx redirects to */}
+      {/* Simple role-based dashboard routes */}
       <Route
         path="/employer-dashboard"
         element={
           <ProtectedRoute>
-            <EmployerDashboard />
+            {user?.role === 'Employer' ? (
+              <EmployerDashboard />
+            ) : (
+              <div className="error-page">
+                <h2>Access Denied</h2>
+                <p>This dashboard is only for employers.</p>
+                <p>Your role: {user?.role}</p>
+              </div>
+            )}
           </ProtectedRoute>
         }
       />
@@ -37,41 +45,75 @@ function AppRoutes() {
         path="/gigworker-dashboard"
         element={
           <ProtectedRoute>
-            <GigWorkerDashboard />
-          </ProtectedRoute>
-        }
-      />
-      
-      {/* Existing unified dashboard route */}
-      <Route
-        path="/dashboard/gigworker"
-        element={
-          <ProtectedRoute>
             {user?.role === 'GigWorker' ? (
               <GigWorkerDashboard />
-            ) : user?.role === 'Employer' ? (
-              <EmployerDashboard />
             ) : (
               <div className="error-page">
-                <h2>Invalid user role</h2>
-                <p>Please contact support if this error persists.</p>
+                <h2>Access Denied</h2>
+                <p>This dashboard is only for gig workers.</p>
+                <p>Your role: {user?.role}</p>
               </div>
             )}
           </ProtectedRoute>
         }
       />
       
-      {/* Existing employer dashboard route */}
+      {/* Alternative dashboard routes with role-specific paths */}
       <Route
-        path="/dashboard/employer"
+        path="/dashboard/gigworker"
         element={
           <ProtectedRoute>
-            <EmployerDashboard />
+            {user?.role === 'GigWorker' ? (
+              <GigWorkerDashboard />
+            ) : (
+              <div className="error-page">
+                <h2>Access Denied</h2>
+                <p>This dashboard is only for gig workers.</p>
+                <p>Your role: {user?.role}</p>
+              </div>
+            )}
           </ProtectedRoute>
         }
       />
       
-      {/* Post gig route - fixed role check */}
+      <Route
+        path="/dashboard/employer"
+        element={
+          <ProtectedRoute>
+            {user?.role === 'Employer' ? (
+              <EmployerDashboard />
+            ) : (
+              <div className="error-page">
+                <h2>Access Denied</h2>
+                <p>This dashboard is only for employers.</p>
+                <p>Your role: {user?.role}</p>
+              </div>
+            )}
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Generic dashboard route that redirects based on role */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            {user?.role === 'Employer' ? (
+              <EmployerDashboard />
+            ) : user?.role === 'GigWorker' ? (
+              <GigWorkerDashboard />
+            ) : (
+              <div className="error-page">
+                <h2>Invalid user role</h2>
+                <p>Please contact support if this error persists.</p>
+                <p>Your role: {user?.role}</p>
+              </div>
+            )}
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Post gig route - only for employers */}
       <Route
         path="/post-gig"
         element={
@@ -82,13 +124,14 @@ function AppRoutes() {
               <div className="error-page">
                 <h2>Access Denied</h2>
                 <p>Only employers can post gigs.</p>
+                <p>Your role: {user?.role}</p>
               </div>
             )}
           </ProtectedRoute>
         }
       />
       
-      {/* Profile route */}
+      {/* Profile route - accessible to all authenticated users */}
       <Route
         path="/profile"
         element={
@@ -98,14 +141,33 @@ function AppRoutes() {
         }
       />
 
-      {/* Apply route */}
+      {/* Apply route - only for gig workers */}
       <Route
         path="/apply/:gigId"
         element={
           <ProtectedRoute>
-            <div>Apply to Gig - Coming Soon!</div>
+            {user?.role === 'GigWorker' ? (
+              <div>Apply to Gig - Coming Soon!</div>
+            ) : (
+              <div className="error-page">
+                <h2>Access Denied</h2>
+                <p>Only gig workers can apply to gigs.</p>
+                <p>Your role: {user?.role}</p>
+              </div>
+            )}
           </ProtectedRoute>
         }
+      />
+
+      {/* Catch-all route for 404 */}
+      <Route 
+        path="*" 
+        element={
+          <div className="error-page">
+            <h2>Page Not Found</h2>
+            <p>The page you're looking for doesn't exist.</p>
+          </div>
+        } 
       />
     </Routes>
   );
