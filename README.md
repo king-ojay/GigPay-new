@@ -80,7 +80,7 @@ To contribute to economic inclusion and development by providing access to short
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/king-ojay/gigpay-new.git
+   git clone https://github.com/king-ojay/GigPay-new.git
    cd gigpay
    ```
 
